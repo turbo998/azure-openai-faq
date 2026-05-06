@@ -1,0 +1,27 @@
+{
+  "name": "azure-openai-faq-samples",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "chat:openai": "tsx 01_chat_openai.ts",
+    "chat:azure": "tsx 01_chat_azure.ts",
+    "gpt55:openai": "tsx 02_gpt55_reasoning_openai.ts",
+    "gpt55:azure": "tsx 02_gpt55_reasoning_azure.ts",
+    "image:openai": "tsx 03_image_openai.ts",
+    "image:azure": "tsx 03_image_azure.ts",
+    "aad:azure": "tsx 04_aad_auth_azure.ts",
+    "validate": "tsx 05_validate_deployment.ts"
+  },
+  "dependencies": {
+    "@azure/identity": "^4.4.0",
+    "@azure/storage-blob": "^12.24.0",
+    "dotenv": "^16.4.5",
+    "openai": "^4.65.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.5.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.4"
+  }
+}

@@ -32,3 +32,7 @@ samples/**/output/
 .idea/
 *.swp
 .DS_Store
+
+# Local scratch / personal test files
+test-*.txt
+results-*.json

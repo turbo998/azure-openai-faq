@@ -34,10 +34,11 @@
 4. [`model` 字段：模型名 vs 部署名（含验证脚本）](./docs/zh-CN/04-model-vs-deployment.md)
 5. [GPT-5.5 对照（Chat / Responses / reasoning / stream）](./docs/zh-CN/05-gpt-5.5.md)
 6. [GPT-Image-2 对照（含 url 不支持的 workaround）](./docs/zh-CN/06-gpt-image-2.md)
-7. [高频踩坑 FAQ](./docs/zh-CN/99-faq.md)
+7. [gpt-image-2 延迟排查实战（含基准脚本）](./docs/zh-CN/07-latency-troubleshooting.md)
+8. [高频踩坑 FAQ](./docs/zh-CN/99-faq.md)
 
 ### English (en-US)
-- [Overview](./docs/en-US/01-overview.md) · [Auth](./docs/en-US/02-auth.md) · [Endpoint](./docs/en-US/03-endpoint.md) · [Model vs Deployment](./docs/en-US/04-model-vs-deployment.md) · [GPT-5.5](./docs/en-US/05-gpt-5.5.md) · [GPT-Image-2](./docs/en-US/06-gpt-image-2.md) · [FAQ](./docs/en-US/99-faq.md)
+- [Overview](./docs/en-US/01-overview.md) · [Auth](./docs/en-US/02-auth.md) · [Endpoint](./docs/en-US/03-endpoint.md) · [Model vs Deployment](./docs/en-US/04-model-vs-deployment.md) · [GPT-5.5](./docs/en-US/05-gpt-5.5.md) · [GPT-Image-2](./docs/en-US/06-gpt-image-2.md) · [Latency troubleshooting](./docs/en-US/07-latency-troubleshooting.md) · [FAQ](./docs/en-US/99-faq.md)
 
 ---
 
@@ -52,6 +53,7 @@
 | 03 | GPT-Image-2 图像生成（Azure 含 b64→Blob URL workaround） | `03_image_*.py` | `03_image_*.ts` |
 | 04 | AAD / Managed Identity 认证（仅 Azure） | `04_aad_auth_azure.py` | `04_aad_auth_azure.ts` |
 | 05 | 部署名验证脚本（仅 Azure） | `05_validate_deployment.py` | `05_validate_deployment.ts` |
+| 06 | gpt-image-2 延迟基准（顺序 + 并发） | [`bench/`](./samples/python/bench) | — |
 
 ---
 

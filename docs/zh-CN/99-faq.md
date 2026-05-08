@@ -80,3 +80,64 @@ for chunk in stream:
 - **DataZoneStandard**：欧/美数据驻留场景。
 - **PTU**：稳态高 QPS 业务，需要保障吞吐。
 - 详见 [Azure OpenAI 部署类型](https://learn.microsoft.com/zh-cn/azure/ai-foundry/openai/how-to/deployment-types)。
+
+### Q16. 客户端 RPM / TPM 超限会报什么错？
+
+**HTTP 层**：`429 Too Many Requests`，带 `Retry-After`（秒）和 `x-ms-request-id`：
+
+```
+HTTP/1.1 429 Too Many Requests
+Retry-After: 38
+x-ratelimit-remaining-requests: 0
+x-ratelimit-remaining-tokens: 12000
+x-ms-request-id: 8c1f...
+```
+
+```json
+{
+  "error": {
+    "code": "429",
+    "message": "Requests to the Embeddings_Create Operation under Azure OpenAI API version 2024-10-21 have exceeded call rate limit of your current OpenAI S0 pricing tier. Please retry after 38 seconds. Please go here: https://aka.ms/oai/quotaincrease if you would like to further increase the default rate limit."
+  }
+}
+```
+
+**RPM vs TPM 用文案区分**（HTTP code 一样都是 429）：
+
+| 触发原因 | 错误文案关键词 |
+|---|---|
+| RPM 超限（每分钟请求数） | `exceeded call rate limit` |
+| TPM 超限（每分钟 token 数） | `exceeded token rate limit` |
+
+**SDK 层默认会吞掉**——这是最大的坑：
+
+| SDK | 抛出类型 | 默认行为 |
+|---|---|---|
+| Python `openai` | `openai.RateLimitError` | **自动重试 2 次**，按 `Retry-After` 退避 → 用完才抛 |
+| Node `openai` | `OpenAI.RateLimitError` | 自动重试 2 次 |
+| .NET `Azure.AI.OpenAI` | `RequestFailedException` (Status=429) | Azure.Core 重试策略 |
+| 直接 REST | 自己看 `response.status_code == 429` | 自己处理 |
+
+⚠️ **应用日志里看不到错误、用户却抱怨慢**，几乎一定是 SDK 在重试 429。把重试关掉让它显式抛出：
+
+```python
+from openai import AzureOpenAI, RateLimitError
+
+client = AzureOpenAI(..., max_retries=0)
+
+try:
+    resp = client.images.generate(model="my-deployment", ...)
+except RateLimitError as e:
+    retry_after = int(e.response.headers.get("retry-after", "10"))
+    request_id  = e.response.headers.get("x-ms-request-id")
+    logger.warning("AOAI 429 rid=%s retry_after=%ds", request_id, retry_after)
+    # 自己决定是否重试 / 排队 / 降级
+```
+
+**服务端验证**（Azure portal → 资源 → Metrics）：`BlockedCalls > 0` 或 `ClientErrors > 0`，`ServerErrors = 0`，就是限流。
+
+**别和这两个 429 搞混**：
+- **Capacity 不足**（control plane，改 deployment 时）：错误码 `InsufficientQuota`，文案 `quota usage is N and the quota limit is N`，是订阅级配额封顶，不是运行时限流。
+- **Token 超 context window**：`400 BadRequest` + `context_length_exceeded`，不是 429。
+
+完整排查链路（基准 → 并发 → metric → 配额）见 [07 · gpt-image-2 延迟排查实战](./07-latency-troubleshooting.md)。

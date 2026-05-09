@@ -141,3 +141,35 @@ except RateLimitError as e:
 - **Token 超 context window**：`400 BadRequest` + `context_length_exceeded`，不是 429。
 
 完整排查链路（基准 → 并发 → metric → 配额）见 [07 · gpt-image-2 延迟排查实战](./07-latency-troubleshooting.md)。
+
+### Q17. 报 `400 input item ID does not belong to this connection` 怎么回事？
+
+这个错误通常出现在使用 **Realtime API** 或 **Responses API**（带 `previous_response_id` / `input` 引用已有 item）时，表示你在请求中引用了一个 **不属于当前会话/连接** 的 `item_id`。
+
+**常见原因**：
+1. **会话串联错误**：客户端代码在新的 WebSocket 连接或新的 API 调用中，复用了旧连接/旧会话返回的 `item_id`，服务端已不认识。
+2. **连接断线重连**：Realtime API 的 WebSocket 断开后重连，原 session 的所有 item ID 失效，但客户端仍用旧 ID 发送 `conversation.item.create` 或 `response.create`。
+3. **多会话混用**：多个并发会话（不同 connection）返回的 item ID 被误传到了另一个 connection。
+4. **SDK / 框架 bug**：部分 SDK 或中间层（如 OpenClaw 的 github-copilot provider）在会话管理上存在已知间歇性 bug，导致 item ID 跨 session 泄漏。
+
+**排查步骤**：
+1. **确认 item ID 来源**：检查请求 body 中引用的 `item_id` / `input` 数组里的 ID 是否确实来自 **同一个** connection/session。
+2. **检查连接生命周期**：WebSocket 断线重连后是否重置了本地的 item 列表？
+3. **加日志**：在每次新建连接/会话时记录 `session.id`，在引用 item 时对比是否匹配。
+4. **重启/重建会话**：最直接的修复是丢弃旧 session 状态，新建连接重新开始。
+5. **升级 SDK**：如果使用 OpenAI Python/Node SDK 或第三方框架，升级到最新版本。
+
+**如果是 OpenClaw 用户**：
+```bash
+# 重启 gateway 清理会话状态
+openclaw gateway restart
+
+# 如仍复现，清理会话缓存后重启
+openclaw sessions clear
+openclaw gateway restart
+
+# 确保 OpenClaw 版本最新
+npm update -g openclaw
+```
+
+> 参考：[OpenClaw Issue #66424](https://github.com/openclaw/openclaw/issues/66424)

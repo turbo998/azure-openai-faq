@@ -121,3 +121,35 @@ except RateLimitError as e:
 - **Token over context window**: `400 BadRequest` + `context_length_exceeded`, not 429.
 
 Full diagnostic flow (baseline → burst → metrics → quota) in [07 · Latency troubleshooting](./07-latency-troubleshooting.md).
+
+### Q17. I get `400 input item ID does not belong to this connection` — what does it mean?
+
+This error occurs when using the **Realtime API** or **Responses API** (with `previous_response_id` / `input` referencing existing items), and you reference an `item_id` that **does not belong to the current session/connection**.
+
+**Common causes**:
+1. **Session mix-up**: Client code reuses an `item_id` from a previous WebSocket connection or API session that the server no longer recognises.
+2. **Reconnection without reset**: After a Realtime API WebSocket disconnects and reconnects, all item IDs from the old session are invalid — but the client still sends them in `conversation.item.create` or `response.create`.
+3. **Cross-session leakage**: Item IDs from one concurrent connection are accidentally passed to another.
+4. **SDK / framework bug**: Some SDKs or middleware layers (e.g. OpenClaw's github-copilot provider) have known intermittent bugs that leak item IDs across sessions.
+
+**Troubleshooting steps**:
+1. **Verify item ID origin**: Check that every `item_id` / `input` ID in your request body actually came from the **same** connection/session.
+2. **Check connection lifecycle**: After WebSocket reconnection, did you clear your local item list?
+3. **Add logging**: Log `session.id` on every new connection; compare it when referencing items.
+4. **Restart / rebuild session**: The quickest fix is to discard old session state and start a fresh connection.
+5. **Upgrade SDK**: If using OpenAI Python/Node SDK or a third-party framework, upgrade to the latest version.
+
+**For OpenClaw users**:
+```bash
+# Restart gateway to clear session state
+openclaw gateway restart
+
+# If still reproducible, clear session cache then restart
+openclaw sessions clear
+openclaw gateway restart
+
+# Make sure OpenClaw is up to date
+npm update -g openclaw
+```
+
+> See also: [OpenClaw Issue #66424](https://github.com/openclaw/openclaw/issues/66424)

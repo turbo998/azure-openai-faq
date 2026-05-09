@@ -77,6 +77,7 @@
 | `OperationNotSupported` | 该 deployment / api-version 不支持此操作（如对 image 模型调 chat） | 用对应模型/API |
 | `DeploymentNotFound` | data plane 找不到部署（已被删/未 ready） | 检查部署状态 |
 | `invalid_api_version` | `api-version` 字符串错 | 查 [API versions](https://learn.microsoft.com/azure/ai-foundry/openai/reference) |
+| *`input item ID does not belong to this connection`* | Realtime / Responses API 引用了不属于当前 session 的 item ID | 重建连接/会话，不复用旧 ID；见 [FAQ Q17](./99-faq.md#q17-报-400-input-item-id-does-not-belong-to-this-connection-怎么回事) |
 
 **典型 400 内容审核响应**：
 ```json

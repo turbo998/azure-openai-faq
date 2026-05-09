@@ -77,6 +77,7 @@ Common `error.code` values:
 | `OperationNotSupported` | Operation not supported on this deployment / api-version | Use the right model/API |
 | `DeploymentNotFound` | Data-plane can't find the deployment | Check status |
 | `invalid_api_version` | `api-version` string wrong | See [API versions](https://learn.microsoft.com/azure/ai-foundry/openai/reference) |
+| *`input item ID does not belong to this connection`* | Realtime / Responses API references an item ID from a different session | Rebuild connection/session, don't reuse old IDs; see [FAQ Q17](./99-faq.md#q17-i-get-400-input-item-id-does-not-belong-to-this-connection--what-does-it-mean) |
 
 **Typical 400 content-filter response**:
 

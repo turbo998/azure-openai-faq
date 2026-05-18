@@ -142,6 +142,8 @@ except RateLimitError as e:
 
 完整排查链路（基准 → 并发 → metric → 配额）见 [07 · gpt-image-2 延迟排查实战](./07-latency-troubleshooting.md)。
 
+> 🔬 想看 **「明明只发了 1 个请求，为什么就 429」**、`EngineOverloaded` 与小窗口 burst 的实测分析？见 [09 · gpt-image-2 首请求 429 排障 Runbook](./09-gpt-image-2-429-runbook.md)。
+
 ### Q17. 报 `400 input item ID does not belong to this connection` 怎么回事？
 
 这个错误通常出现在使用 **Realtime API** 或 **Responses API**（带 `previous_response_id` / `input` 引用已有 item）时，表示你在请求中引用了一个 **不属于当前会话/连接** 的 `item_id`。

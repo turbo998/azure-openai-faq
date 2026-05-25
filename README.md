@@ -37,10 +37,11 @@
 7. [gpt-image-2 延迟排查实战（含基准脚本）](./docs/zh-CN/07-latency-troubleshooting.md)
 8. [错误码速查（Data Plane + Foundry Control Plane）](./docs/zh-CN/08-error-codes.md)
 9. [gpt-image-2 首请求 429 排障 Runbook（实测）](./docs/zh-CN/09-gpt-image-2-429-runbook.md)
-10. [高频踩坑 FAQ](./docs/zh-CN/99-faq.md)
+10. [音频模型定价对照（Realtime / Audio / TTS / Whisper）](./docs/zh-CN/10-audio-pricing.md)
+11. [高频踩坑 FAQ](./docs/zh-CN/99-faq.md)
 
 ### English (en-US)
-- [Overview](./docs/en-US/01-overview.md) · [Auth](./docs/en-US/02-auth.md) · [Endpoint](./docs/en-US/03-endpoint.md) · [Model vs Deployment](./docs/en-US/04-model-vs-deployment.md) · [GPT-5.5](./docs/en-US/05-gpt-5.5.md) · [GPT-Image-2](./docs/en-US/06-gpt-image-2.md) · [Latency troubleshooting](./docs/en-US/07-latency-troubleshooting.md) · [Error codes](./docs/en-US/08-error-codes.md) · [gpt-image-2 429 runbook](./docs/en-US/09-gpt-image-2-429-runbook.md) · [FAQ](./docs/en-US/99-faq.md)
+- [Overview](./docs/en-US/01-overview.md) · [Auth](./docs/en-US/02-auth.md) · [Endpoint](./docs/en-US/03-endpoint.md) · [Model vs Deployment](./docs/en-US/04-model-vs-deployment.md) · [GPT-5.5](./docs/en-US/05-gpt-5.5.md) · [GPT-Image-2](./docs/en-US/06-gpt-image-2.md) · [Latency troubleshooting](./docs/en-US/07-latency-troubleshooting.md) · [Error codes](./docs/en-US/08-error-codes.md) · [gpt-image-2 429 runbook](./docs/en-US/09-gpt-image-2-429-runbook.md) · [Audio pricing](./docs/en-US/10-audio-pricing.md) · [FAQ](./docs/en-US/99-faq.md)
 
 ---
 
